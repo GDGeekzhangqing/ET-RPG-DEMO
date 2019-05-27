@@ -10,28 +10,25 @@ using UnityEngine;
 /// <summary>
 /// 一组BUFF,用来组成玩家眼中的装备/道具/技能等等附加的持续性效果
 /// </summary>
-[Serializable]
-public struct BuffGroup
+public class BuffGroup
 {
+
     private long buffGroupId;
 
-    [HideInEditorMode]
-    [NonSerialized]
     public long sourceUnitId;// 添加到一个Unit的BuffMgr上时,这个用以记录这个buffGroup的来源
-    [HideInEditorMode]
-    [NonSerialized]
+
     public int skillLevel;//添加到一个Unit身上时,这个用以记录对应技能的等级
-    [InfoBox("该值对应buff配置表里的某个元素")]
-    [LabelText("Buff类型Id")]
-    [LabelWidth(150)]
+    //[InfoBox("该值对应buff配置表里的某个元素")]
+    //[LabelText("Buff类型Id")]
+    //[LabelWidth(150)]
     public int buffTypeId;   //从buff配置表中读取Buff应该显示出来的名字/描述等信息
-    [InfoBox("-1代表持续到BUFF组被解除,0代表瞬间完成.大于0代表持续一段时间")]
-    [LabelText("Buff持续时间")]
-    [LabelWidth(150)]
+    //[InfoBox("-1代表持续到BUFF组被解除,0代表瞬间完成.大于0代表持续一段时间")]
+    //[LabelText("Buff持续时间")]
+    //[LabelWidth(150)]
     public float duration ;
 
-    [ListDrawerSettings(ShowItemCount = true)]
-    public List<BaseBuffData> buffList;
+    public ETCancellationTokenSource cancellationTokenSource; // 用以移除Buff
+
 
     public long BuffGroupId
     {
@@ -44,26 +41,14 @@ public struct BuffGroup
         set => buffGroupId = value;
     }
 
-    public void AddBuff(BaseBuffData baseBuffData)
+    public List<BaseBuffData> GetBuffList()
     {
-        buffList.Add(baseBuffData);
-    }
-
-    public int IsExist(string buffId)
-    {
-        int num = 0;
-        foreach (var v in buffList)
-        {
-            if (v.GetBuffIdType() == buffId)
-            {
-                num++;
-            }
-        }
-        return num;
+        return  BuffConfigComponent.instance.GetBuffConfigData(buffTypeId).buffList;
     }
 
     public void OnBuffGroupAdd(Unit source, Unit target)
     {
+        var buffList = GetBuffList();
         if (buffList.Count > 0)
         {
             foreach (var v in buffList)
@@ -94,6 +79,7 @@ public struct BuffGroup
 
     public void OnBuffGroupRemove(Unit source, Unit target)
     {
+        var buffList = GetBuffList();
         if (buffList.Count > 0)
         {
             foreach (var v in buffList)

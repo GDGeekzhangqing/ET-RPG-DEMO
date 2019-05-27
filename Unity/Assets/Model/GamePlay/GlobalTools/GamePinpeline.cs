@@ -23,7 +23,7 @@ namespace ETModel
             }
 
             Game.Scene.AddComponent<BuffHandlerComponent>();
-
+            Game.Scene.AddComponent<BuffConfigComponent>();
             Game.Scene.AddComponent<SkillConfigComponent>();
             Game.Scene.AddComponent<EffectCacheComponent>();
             Game.Scene.AddComponent<AudioCacheComponent>();

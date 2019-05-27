@@ -102,8 +102,12 @@ public class EffectCacheComponent : ETModel.Component
             }
 
         }
+        foreach (var v in prefabPool.Values)
+        {
+            GameObject.Destroy(v);
+        }
         gameObjPool.Clear();
-
+        prefabPool.Clear();
     }
 }
 

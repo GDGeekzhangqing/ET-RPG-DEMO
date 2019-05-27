@@ -15,15 +15,6 @@ public class BuffMgrComponentAwakeSystem : AwakeSystem<BuffMgrComponent>
     }
 }
 
-[ObjectSystem]
-public class BuffMgrComponentUpdateSystem : FixedUpdateSystem<BuffMgrComponent>
-{
-    public override void FixedUpdate(BuffMgrComponent self)
-    {
-        self.FixedUpdate();
-    }
-}
-
 /// <summary>
 /// Unit身上管理所有BUFF的组件
 /// </summary>
@@ -32,7 +23,6 @@ public class BuffMgrComponent : ETModel.Component
 
     public Dictionary<long, BuffGroup> buffGroupDic; 
 
-    public List<BuffGroup> updateList;//保存duration>0的BuffGroup,战斗结束后统一移除.
     //如果是节日,活动等导致的长时间BUFF. 比如新人奖励(等级在50级之前,获得的经验值额外增加50%),或者常驻一个持续一周的副本内属性提升的BUFF
     //这种类型的,在另外个地方,单独管理即可. (监听进入副本的事件,而后给角色添加BUFF)
 
@@ -41,63 +31,48 @@ public class BuffMgrComponent : ETModel.Component
     public void Awake()
     {
         buffGroupDic = new Dictionary<long, BuffGroup>();
-        updateList = new List<BuffGroup>();
     }
 
-    public void FixedUpdate()
+    async ETVoid DealWithBuffGroup(BuffGroup buffGroup)
     {
-        if (updateList.Count > 0)
+        while (true)
         {
-            for (int i = updateList.Count-1; i >=0; i--)
-            {
+            await TimerComponent.Instance.WaitAsync(calSpan, buffGroup.cancellationTokenSource.Token);
 
-                if (!DealWithBuffGroup(updateList[i]))
+            TimeSpanHelper.Timer timer = TimeSpanHelper.GetTimer(buffGroup.GetHashCode());
+            long now = TimeHelper.Now();
+            if (now - timer.timing >= calSpan)
+            {
+                timer.timing = now;
+            }
+            var buffList = buffGroup.GetBuffList();
+            if (buffList.Count > 0)
+            {
+                foreach (var v in buffList)
                 {
-                    updateList.RemoveAt(i);
+                    switch (v)
+                    {
+                        case Buff_DOT dot:
+                            GameCalNumericTool.CalDotDamage(buffGroup.sourceUnitId, GetParent<Unit>(), dot);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
-        }
 
-    }
-
-    bool DealWithBuffGroup(BuffGroup buffGroup)
-    {
-        TimeSpanHelper.Timer timer = TimeSpanHelper.GetTimer(buffGroup.GetHashCode());
-        long now = TimeHelper.Now();
-        if (now - timer.timing >= calSpan)
-        {
-            timer.timing = now;
-        }
-        if (buffGroup.buffList.Count > 0)
-        {
-            foreach (var v in buffGroup.buffList)
+            if (timer.timing >= timer.interval)
             {
-                switch (v)
-                {
-                    case Buff_DOT dot:
-                        GameCalNumericTool.CalDotDamage(buffGroup.sourceUnitId,GetParent<Unit>(), dot);
-                        break;
-
-                    default:
-                        break;
-                }
+                RemoveGroup(buffGroup.BuffGroupId);
+                TimeSpanHelper.Remove(buffGroup.GetHashCode());
+                return;
             }
         }
-
-        if (timer.interval <= 0)
-        {
-            RemoveGroup(buffGroup.BuffGroupId);
-            TimeSpanHelper.Remove(buffGroup.GetHashCode());
-            return false;
-        }
-        else
-        {
-            return true;
-        }
     }
 
 
-    public async void AddBuffGroup(long groupId, BuffGroup group)
+    public  void AddBuffGroup(long groupId, BuffGroup group)
     {
         try
         {
@@ -105,11 +80,15 @@ public class BuffMgrComponent : ETModel.Component
 
             //刷新BUFF,暂时没做叠加
 
-            if (buffGroupDic.ContainsKey(groupId))
+            if (buffGroupDic.TryGetValue(groupId,out var oldBuff))
             {
-                Log.Debug("移除原Buff");
-                RemoveGroup(groupId);
-                await TimerComponent.Instance.WaitAsync(0.1F);//延迟一下防止卡顿
+                //刷新新时长
+                oldBuff.duration = group.duration;
+                buffGroupDic[groupId] = oldBuff;
+                TimeSpanHelper.Timer timer = TimeSpanHelper.GetTimer(oldBuff.GetHashCode());
+                timer.interval = (long)(oldBuff.duration * 1000);
+                timer.timing = 0;
+                return;
             }
 
             BuffGroup newGroup = group;
@@ -125,7 +104,10 @@ public class BuffMgrComponent : ETModel.Component
             
             if (newGroup.duration > 0)
             {
-                updateList.Add(newGroup);
+                TimeSpanHelper.Timer timer = TimeSpanHelper.GetTimer(newGroup.GetHashCode());
+                timer.interval = (long)(newGroup.duration * 1000);
+                timer.timing = 0;
+                DealWithBuffGroup(newGroup).Coroutine();
             }
         }
         catch (Exception e)
@@ -156,15 +138,7 @@ public class BuffMgrComponent : ETModel.Component
 
     public void ClearBuffGroupOnBattleEnd()
     {
-        if (updateList.Count > 0)
-        {
-            for (int i = 0; i < updateList.Count; i++)
-            {
 
-                RemoveGroup(updateList[i].BuffGroupId);
-            }
-            updateList.Clear();
-        }
         //TODO:后续如果出现诸如冰冻等限制类类型的DEBUFF,会在这里统一去除
     }
 
@@ -174,7 +148,6 @@ public class BuffMgrComponent : ETModel.Component
         if (IsDisposed)
             return;
         base.Dispose();
-        updateList.Clear();
         buffGroupDic.Clear();
     }
 

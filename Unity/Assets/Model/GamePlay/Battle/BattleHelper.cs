@@ -72,8 +72,8 @@ public static class BattleEventHandler
                     if (buff.GetBuffIdType() == BuffIdType.AddBuff)
                     {
                         Buff_AddBuff buff_AddBuffOnSkillEnd = (Buff_AddBuff)buff;
-                        if (buff_AddBuffOnSkillEnd.buffGroup.buffList == null) continue;
-                        foreach (var buff_onSkillEnd in buff_AddBuffOnSkillEnd.buffGroup.buffList)
+                        if (buff_AddBuffOnSkillEnd.buffGroup.GetBuffList() == null) continue;
+                        foreach (var buff_onSkillEnd in buff_AddBuffOnSkillEnd.buffGroup.GetBuffList())
                         {
                             AddEffectCache(effectCacheComponent, buff_onSkillEnd, skillAssetsPrefabGo);
                             AddAudioCache(audioCacheComponent, buff_onSkillEnd, skillAssetsPrefabGo);
