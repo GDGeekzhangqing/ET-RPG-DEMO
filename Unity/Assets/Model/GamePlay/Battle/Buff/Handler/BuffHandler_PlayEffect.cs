@@ -12,7 +12,7 @@ using UnityEngine;
 public class BuffHandler_PlayEffect : BaseBuffHandler, IBuffActionWithGetInputHandler, IBuffRemoveHanlder
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 #if !SERVER
         Buff_PlayEffect buff = (Buff_PlayEffect)buffHandlerVar.data;
@@ -50,7 +50,7 @@ public class BuffHandler_PlayEffect : BaseBuffHandler, IBuffActionWithGetInputHa
     }
 
 
-    public void Remove(BuffHandlerVar buffHandlerVar)
+    public void Remove(ref BuffHandlerVar buffHandlerVar)
     {
 #if !SERVER
         Buff_PlayEffect buff = (Buff_PlayEffect)buffHandlerVar.data;
@@ -69,7 +69,7 @@ public class BuffHandler_PlayEffect : BaseBuffHandler, IBuffActionWithGetInputHa
 #endif
     }
 
-    public static async ETVoid AddEffect(Unit unit, string buffSignal, string effectObjId, bool lockTarget, Vector3 target, bool canBeInterrupt, CancellationToken cancellationToken, float duration,string skillId)
+    public static async ETVoid AddEffect(Unit unit, string buffSignal, string effectObjId, bool lockTarget, Vector3 target, bool canBeInterrupt, CancellationTokenSource cancellationToken, float duration,string skillId)
     {
 #if !SERVER
         UnityEngine.GameObject go = null;
@@ -88,7 +88,7 @@ public class BuffHandler_PlayEffect : BaseBuffHandler, IBuffActionWithGetInputHa
 
         go.SetActive(true);
         if (canBeInterrupt)
-            cancellationToken.Register(() =>
+            cancellationToken.Token.Register(() =>
             {
                 go.transform.parent = null;
                 Game.Scene.GetComponent<EffectCacheComponent>().Recycle(effectObjId, go);
@@ -96,7 +96,7 @@ public class BuffHandler_PlayEffect : BaseBuffHandler, IBuffActionWithGetInputHa
         if (duration > 0)
         {
             if (canBeInterrupt)
-                await TimerComponent.Instance.WaitAsync((long)(duration * 1000), cancellationToken);
+                await TimerComponent.Instance.WaitAsync((long)(duration * 1000), cancellationToken.Token);
             else
                 await TimerComponent.Instance.WaitAsync(duration);
         }

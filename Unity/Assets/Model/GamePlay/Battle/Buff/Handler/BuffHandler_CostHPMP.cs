@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 public class BuffHandler_CostHPMP : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_CostHP_MP cost = (Buff_CostHP_MP)buffHandlerVar.data;
 

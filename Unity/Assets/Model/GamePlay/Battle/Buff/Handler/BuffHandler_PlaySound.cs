@@ -11,7 +11,7 @@ using UnityEngine;
 public class BuffHandler_PlaySound : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 
         Buff_PlaySound buff_PlaySound = (Buff_PlaySound)buffHandlerVar.data;

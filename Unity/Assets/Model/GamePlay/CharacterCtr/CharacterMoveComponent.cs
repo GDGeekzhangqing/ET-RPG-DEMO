@@ -69,7 +69,7 @@ namespace ETModel
         public long endTime;
 
         public ETTaskCompletionSource moveTcs;
-        public ETCancellationTokenSource cancellationTokenSource;
+        public CancellationTokenSource cancellationTokenSource;
 
         private float baseMoveSpeed = 5;// 这个应该从配置表里读
 

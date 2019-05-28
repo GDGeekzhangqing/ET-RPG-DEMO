@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 [BuffType(BuffIdType.GiveSpecialDebuff)]
 public class BuffHandler_GiveSpecialDebuff : BaseBuffHandler,IBuffActionWithGetInputHandler,IBuffRemoveHanlder
 {
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_GiveSpecialDebuff buff = (Buff_GiveSpecialDebuff)buffHandlerVar.data;
 
@@ -37,7 +37,7 @@ public class BuffHandler_GiveSpecialDebuff : BaseBuffHandler,IBuffActionWithGetI
     }
 
 
-    public void Remove(BuffHandlerVar buffHandlerVar)
+    public void Remove(ref BuffHandlerVar buffHandlerVar)
     {
 
         Buff_GiveSpecialDebuff buff = (Buff_GiveSpecialDebuff)buffHandlerVar.data;

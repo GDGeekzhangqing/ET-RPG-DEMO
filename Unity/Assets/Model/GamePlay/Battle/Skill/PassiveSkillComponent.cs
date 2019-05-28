@@ -32,7 +32,6 @@ public class PassiveSkillComponentAwakeSystem : AwakeSystem<PassiveSkillComponen
 public class PassiveSkillComponent : ETModel.Component
 {
     public Dictionary<string, BaseSkill_AppendedData> skillList;
-    public ETCancellationTokenSource tokenSource;
 
     public class PassiveSkillBufferData
     {
@@ -77,8 +76,6 @@ public class PassiveSkillComponent : ETModel.Component
                         {
                             if (SkillHelper.CheckIfSkillCanUse(skillId, source))
                             {
-                                tokenSource = new ETCancellationTokenSource();
-
                                 SkillHelper.ExecutePassiveSkill(excuteSkillParams);
                             }
                         }
@@ -94,7 +91,6 @@ public class PassiveSkillComponent : ETModel.Component
         }
         if (SkillHelper.CheckIfSkillCanUse(skillId, source))
         {
-            tokenSource = new ETCancellationTokenSource();
             SkillHelper.ExecutePassiveSkill(excuteSkillParams);
             bufferDatas[skillId].apply = true;
         }

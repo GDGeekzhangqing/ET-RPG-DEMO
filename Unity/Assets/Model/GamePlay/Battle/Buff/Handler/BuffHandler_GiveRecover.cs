@@ -11,7 +11,7 @@ public class BuffHandler_GiveRecover : BaseBuffHandler,IBuffActionWithGetInputHa
 {
 
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 
         Buff_GiveRecover buff = (Buff_GiveRecover)buffHandlerVar.data;

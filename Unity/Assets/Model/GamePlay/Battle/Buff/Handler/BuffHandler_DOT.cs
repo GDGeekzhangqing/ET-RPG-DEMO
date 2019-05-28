@@ -11,7 +11,7 @@ using UnityEngine;
 public class BuffHandler_DOT : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_DOT buff = (Buff_DOT)buffHandlerVar.data;
         NumericComponent numericComponent = buffHandlerVar.source.GetComponent<NumericComponent>();

@@ -12,7 +12,7 @@ namespace ETHotfix
             Unit unit = UnitComponent.Instance.Get(message.Id);
 
             BuffHandler_PlayEffect.AddEffect(unit, message.BuffSignal, message.EffectObjId, message.LockTarget, message.Pos.ToV3(),
-             message.CanBeInterupt, unit.GetComponent<ActiveSkillComponent>().cancelToken.Token, message.Duration,null).Coroutine();
+             message.CanBeInterupt, unit.GetComponent<ActiveSkillComponent>().cancelToken, message.Duration,null).Coroutine();
 
 
         }

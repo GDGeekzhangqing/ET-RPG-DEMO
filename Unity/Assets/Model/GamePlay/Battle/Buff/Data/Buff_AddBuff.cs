@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 [Serializable]
 public class Buff_AddBuff : BaseBuffData
 {
-    public BuffGroup buffGroup;
+    public int buffTypeId;
+    public float duration;
 
     public override string GetBuffIdType()
     {

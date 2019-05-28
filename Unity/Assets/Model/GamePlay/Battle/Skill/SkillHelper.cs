@@ -56,7 +56,7 @@ public static class SkillHelper
         return skillData;
     }
 
-    public struct ExecuteSkillParams : IDisposable
+    public class ExecuteSkillParams : IDisposable
     {
         public Unit source; // 技能使用方
         public string skillId;
@@ -152,7 +152,7 @@ public static class SkillHelper
                     if (buffRemoveHanlder != null)
                     {
                         buffHandlerVar.data = buff.buffData;
-                        buffRemoveHanlder.Remove(buffHandlerVar);
+                        buffRemoveHanlder.Remove(ref buffHandlerVar);
                     }
                 }
             }
@@ -309,7 +309,7 @@ public static class SkillHelper
                                             newVar.source = source;
                                             newVar.skillId = skillId;
                                             newVar.skillLevel = 1;//如果游戏需要根据不同的技能等级播放不同的特效,那么传递的参数请增加一个技能等级,这里默认填1了
-                                            newVar.cancelToken = new CancellationToken();
+                                            newVar.cancelToken = new CancellationTokenSource();
  
                                             newVar.bufferValues = new Dictionary<Type, IBufferValue>();
 
@@ -388,7 +388,7 @@ public static class SkillHelper
                 if (v.delayTime > 0)
                     await TimerComponent.Instance.WaitAsync((long)(1000 * v.delayTime), skillParams.cancelToken.Token);
                 if (skillParams.cancelToken == null || skillParams.cancelToken.IsCancellationRequested) return;
-                buffHandlerVar.cancelToken = skillParams.cancelToken.Token;
+                buffHandlerVar.cancelToken = skillParams.cancelToken;
                 BuffHandlerVar newVar = buffHandlerVar;
                 newVar.bufferValues = new Dictionary<Type, IBufferValue>();
                 if (buffHandlerVar.bufferValues != null)
@@ -423,13 +423,13 @@ public static class SkillHelper
         IBuffActionWithGetInputHandler buffActionWithGetInput = baseBuffHandler as IBuffActionWithGetInputHandler;
         if (buffActionWithGetInput != null)
         {
-            buffActionWithGetInput.ActionHandle(buffHandlerVar);
+            buffActionWithGetInput.ActionHandle(ref buffHandlerVar);
             return;
         }
         IBuffActionWithSetOutputHandler buffActionWithSetOutputHandler = baseBuffHandler as IBuffActionWithSetOutputHandler;
         if (buffActionWithSetOutputHandler != null)
         {
-            var newBuffReturnedValue = buffActionWithSetOutputHandler.ActionHandle(buffHandlerVar);
+            var newBuffReturnedValue = buffActionWithSetOutputHandler.ActionHandle(ref buffHandlerVar);
             if (tempData.ContainsKey((buffHandlerVar.source, buff.buffData.buffSignal)))
             {
                 //可能还存在着之前使用技能时找到的数据. 所以这里清理掉它

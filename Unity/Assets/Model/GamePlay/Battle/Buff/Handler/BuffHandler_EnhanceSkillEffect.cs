@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 [BuffType(BuffIdType.EnhanceSkillEffect)]
 public class BuffHandler_EnhanceSkillEffect : BaseBuffHandler,IBuffActionWithGetInputHandler
 {
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_EnhanceSkillEffect buff = (Buff_EnhanceSkillEffect)buffHandlerVar.data;
 

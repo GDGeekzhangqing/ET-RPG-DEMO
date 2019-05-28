@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 public class BuffHandler_AddBuff : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         if (!buffHandlerVar.GetBufferValue(out BufferValue_TargetUnits targetUnits))
         {
@@ -18,7 +18,10 @@ public class BuffHandler_AddBuff : BaseBuffHandler, IBuffActionWithGetInputHandl
         }
 
         Buff_AddBuff addBuff = (Buff_AddBuff)buffHandlerVar.data;
-        addBuff.buffGroup.sourceUnitId = buffHandlerVar.source.Id;
+        BuffGroupInitData buffData = new BuffGroupInitData();
+        buffData.sourceUnitId = buffHandlerVar.source.Id;
+        buffData.duration = addBuff.duration;
+        buffData.buffTypeId = addBuff.buffTypeId;
         foreach (var v in targetUnits.targets)
         {
             //未造成伤害就不给予效果
@@ -28,7 +31,8 @@ public class BuffHandler_AddBuff : BaseBuffHandler, IBuffActionWithGetInputHandl
                 if (!attackSuccess.successDic[v.Id]) continue;
             }
             BuffMgrComponent buffMgr = v.GetComponent<BuffMgrComponent>();
-            buffMgr.AddBuffGroup(addBuff.buffGroup.BuffGroupId, addBuff.buffGroup);
+            long id = BuffGroup.GetBuffGroupId(buffHandlerVar.source, addBuff);
+            buffMgr.AddBuffGroup(id,in buffData);
         }
     }
 }

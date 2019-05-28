@@ -11,7 +11,7 @@ using UnityEngine;
 public class BuffHandler_DamageByNumeric : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_DamageByNumeric buff = (Buff_DamageByNumeric)buffHandlerVar.data;
         if (!buffHandlerVar.GetBufferValue(out BufferValue_TargetUnits targetUnits))

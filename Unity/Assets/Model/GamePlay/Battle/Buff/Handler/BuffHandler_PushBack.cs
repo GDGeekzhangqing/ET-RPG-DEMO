@@ -11,7 +11,7 @@ using UnityEngine;
 public class BuffHandler_PushBack : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 #if !SERVER
         if (Game.Scene.GetComponent<GlobalConfigComponent>().networkPlayMode)

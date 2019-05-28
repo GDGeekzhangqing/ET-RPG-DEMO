@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 public class BuffHandler_GiveNumeric : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_GiveNumeric buff = (Buff_GiveNumeric)buffHandlerVar.data;
         if (!buffHandlerVar.GetBufferValue(out BufferValue_TargetUnits targetUnits))

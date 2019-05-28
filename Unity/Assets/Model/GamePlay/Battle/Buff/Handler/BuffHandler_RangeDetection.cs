@@ -14,7 +14,7 @@ using Box2DSharp.Common;
 public class BuffHandler_RangeDetection : BaseBuffHandler, IBuffActionWithSetOutputHandler
 {
 
-    public IBufferValue[] ActionHandle(BuffHandlerVar buffHandlerVar)
+    public IBufferValue[] ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_RangeDetection buff_RangeDetection = (Buff_RangeDetection)buffHandlerVar.data;
 

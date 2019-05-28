@@ -7,14 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-/// <summary>
-/// 一组BUFF,用来组成玩家眼中的装备/道具/技能等等附加的持续性效果
-/// </summary>
-public class BuffGroup
+
+public struct BuffGroupInitData
 {
-
-    private long buffGroupId;
-
     public long sourceUnitId;// 添加到一个Unit的BuffMgr上时,这个用以记录这个buffGroup的来源
 
     public int skillLevel;//添加到一个Unit身上时,这个用以记录对应技能的等级
@@ -25,25 +20,39 @@ public class BuffGroup
     //[InfoBox("-1代表持续到BUFF组被解除,0代表瞬间完成.大于0代表持续一段时间")]
     //[LabelText("Buff持续时间")]
     //[LabelWidth(150)]
-    public float duration ;
+    public float duration;
+}
 
-    public ETCancellationTokenSource cancellationTokenSource; // 用以移除Buff
+/// <summary>
+/// 一组BUFF,用来组成玩家眼中的装备/道具/技能等等附加的持续性效果
+/// </summary>
+public class BuffGroup
+{
+    public BuffGroupInitData data;
 
+    public System.Threading.CancellationTokenSource cancellationTokenSource = new System.Threading.CancellationTokenSource(); // 用以移除Buff
+
+    public static Dictionary<(long, string), long> BuffGroupIdCollection = new Dictionary<(long, string), long>();
+
+    public static long GetBuffGroupId(Unit unit, BaseBuffData buffData)
+    {
+        var key = (unit.Id, buffData.buffSignal);
+        if (BuffGroupIdCollection.TryGetValue(key, out long id))
+        {
+            return id;
+        }
+        BuffGroupIdCollection[key] = IdGenerater.GenerateId();
+        return BuffGroupIdCollection[key];
+    }
 
     public long BuffGroupId
     {
-        get
-        {
-            if (buffGroupId == 0)
-                buffGroupId = IdGenerater.GenerateId();
-            return buffGroupId;
-        }
-        set => buffGroupId = value;
+        get;set;
     }
 
     public List<BaseBuffData> GetBuffList()
     {
-        return  BuffConfigComponent.instance.GetBuffConfigData(buffTypeId).buffList;
+        return  BuffConfigComponent.instance.GetBuffConfigData(data.buffTypeId).buffList;
     }
 
     public void OnBuffGroupAdd(Unit source, Unit target)
@@ -68,10 +77,10 @@ public class BuffGroup
             var1.bufferValues = new Dictionary<Type, IBufferValue>();
             var1.bufferValues[typeof(BufferValue_TargetUnits)] = new BufferValue_TargetUnits() { targets = new Unit[1] { target } };
             var1.source = source;
-            var1.skillLevel = skillLevel;
+            var1.skillLevel = data.skillLevel;
             var1.playSpeed = 1;// 这个应该从角色属性计算得出,不过这里就先恒定为1好了.
             var1.data = buff;
-            buffActionWithGetInputHandler.ActionHandle(var1);
+            buffActionWithGetInputHandler.ActionHandle(ref var1);
         }
 
     }
@@ -103,7 +112,7 @@ public class BuffGroup
             buffHandlerVar.source = source;
             buffHandlerVar.playSpeed = 1;// 这个应该从角色属性计算得出,不过这里就先恒定为1好了.
             buffHandlerVar.data = v;
-            buffRemoveHanlder.Remove(buffHandlerVar);
+            buffRemoveHanlder.Remove(ref buffHandlerVar);
         }
     }
 
@@ -119,7 +128,7 @@ public class BuffGroup
             buffHandlerVar.source = source;
             buffHandlerVar.playSpeed = 1;// 这个应该从角色属性计算得出,不过这里就先恒定为1好了.
             buffHandlerVar.data = baseBuffData;
-            buffUpdateHandler.Update(buffHandlerVar);
+            buffUpdateHandler.Update(ref buffHandlerVar);
         }
     }
 }

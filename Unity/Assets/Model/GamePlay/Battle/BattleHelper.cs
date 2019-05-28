@@ -72,8 +72,14 @@ public static class BattleEventHandler
                     if (buff.GetBuffIdType() == BuffIdType.AddBuff)
                     {
                         Buff_AddBuff buff_AddBuffOnSkillEnd = (Buff_AddBuff)buff;
-                        if (buff_AddBuffOnSkillEnd.buffGroup.GetBuffList() == null) continue;
-                        foreach (var buff_onSkillEnd in buff_AddBuffOnSkillEnd.buffGroup.GetBuffList())
+                        var configData = BuffConfigComponent.instance.GetBuffConfigData(buff_AddBuffOnSkillEnd.buffTypeId);
+                        if (configData == null)
+                        {
+                            Log.Error("配置错误,找不到Id为" + buff_AddBuffOnSkillEnd.buffTypeId + "的Buff");
+                            continue;
+                        }
+                        if (configData.buffList == null) continue;
+                        foreach (var buff_onSkillEnd in configData.buffList)
                         {
                             AddEffectCache(effectCacheComponent, buff_onSkillEnd, skillAssetsPrefabGo);
                             AddAudioCache(audioCacheComponent, buff_onSkillEnd, skillAssetsPrefabGo);

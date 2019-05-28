@@ -11,7 +11,7 @@ using UnityEngine;
 public class BuffHandler_Move : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public async void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 #if !SERVER
         if (Game.Scene.GetComponent<GlobalConfigComponent>().networkPlayMode)
@@ -54,7 +54,7 @@ public class BuffHandler_Move : BaseBuffHandler, IBuffActionWithGetInputHandler
                     //需要检查目标位置是否能移动过去,如果不行的话,就不位移了
                     CharacterMoveComponent characterMoveComponent = buffHandlerVar.source.GetComponent<CharacterMoveComponent>();
                     float moveSpeed = Vector3.Distance(v.Position, aimPos) / buff_Move.moveDuration;
-                    await characterMoveComponent.MoveTo(aimPos, moveSpeed);
+                    characterMoveComponent.MoveTo(aimPos, moveSpeed).Coroutine();
 
 
                 }

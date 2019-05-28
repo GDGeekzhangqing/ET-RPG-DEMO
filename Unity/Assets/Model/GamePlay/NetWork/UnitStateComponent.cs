@@ -51,7 +51,7 @@ namespace ETModel
 
         private bool haveInited;
 
-        public ETCancellationTokenSource moveCancelTokenSource;
+        public System.Threading.CancellationTokenSource moveCancelTokenSource;
 
         public void Awake()
         {

@@ -12,7 +12,7 @@ using PF;
 public class BuffHandler_PlayAnim : BaseBuffHandler,IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
 #if !SERVER
         Buff_PlayAnim buff_PlayAnim = (Buff_PlayAnim)buffHandlerVar.data;
@@ -33,7 +33,7 @@ public class BuffHandler_PlayAnim : BaseBuffHandler,IBuffActionWithGetInputHandl
             {
                 if (buff_PlayAnim.canBeInterrupted)
                 {
-                    buffHandlerVar.cancelToken.Register(() =>
+                    buffHandlerVar.cancelToken.Token.Register(() =>
                     {
                         animatorComponent.SetBoolValue(buff_PlayAnim.anim_boolValue, !buff_PlayAnim.boolValue);
                     });

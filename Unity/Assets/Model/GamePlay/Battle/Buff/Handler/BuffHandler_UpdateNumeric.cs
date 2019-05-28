@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 public class BuffHandler_UpdateNumeric : BaseBuffHandler, IBuffActionWithGetInputHandler, IBuffRemoveHanlder, IBuffUpdateHanlder
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_UpdateNumeric buff = (Buff_UpdateNumeric)buffHandlerVar.data;
 
@@ -37,7 +37,7 @@ public class BuffHandler_UpdateNumeric : BaseBuffHandler, IBuffActionWithGetInpu
             Game.EventSystem.Run(EventIdType.NumbericChange, buff.targetNumeric, v.Id,(float)BuffHandlerVar.cacheDatas_float[(buffHandlerVar.source.Id, buff.buffSignal)]);
         }
     }
-    public void Remove(BuffHandlerVar buffHandlerVar)
+    public void Remove(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_UpdateNumeric buff = (Buff_UpdateNumeric)buffHandlerVar.data;
 
@@ -53,7 +53,7 @@ public class BuffHandler_UpdateNumeric : BaseBuffHandler, IBuffActionWithGetInpu
         BuffHandlerVar.cacheDatas_float.Remove((buffHandlerVar.source.Id, buff.buffSignal));
     }
 
-    public void Update(BuffHandlerVar buffHandlerVar)
+    public void Update(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_UpdateNumeric buff = (Buff_UpdateNumeric)buffHandlerVar.data;
 

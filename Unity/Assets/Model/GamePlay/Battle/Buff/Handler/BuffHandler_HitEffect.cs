@@ -12,7 +12,7 @@ using UnityEngine;
 public class BuffHandler_HitEffect : BaseBuffHandler,IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_HitEffect buff = (Buff_HitEffect)buffHandlerVar.data;
         if (buffHandlerVar.GetBufferValue(out BufferValue_TargetUnits targets))

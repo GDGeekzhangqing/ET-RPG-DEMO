@@ -13,7 +13,7 @@ using Box2DSharp.Collision.Shapes;
 public class BuffHandler_EmitObj : BaseBuffHandler, IBuffActionWithGetInputHandler
 {
 
-    public void ActionHandle(BuffHandlerVar buffHandlerVar)
+    public void ActionHandle(ref BuffHandlerVar buffHandlerVar)
     {
         Buff_EmitObj buff = buffHandlerVar.data as Buff_EmitObj;
         UnitData emitObjData = new UnitData();

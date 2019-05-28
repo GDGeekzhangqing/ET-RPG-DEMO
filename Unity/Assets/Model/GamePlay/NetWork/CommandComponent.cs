@@ -50,7 +50,7 @@ namespace ETModel
 
         public UnitStateComponent unitState;
 
-        public ETCancellationTokenSource moveCancelTokenSource;
+        public System.Threading.CancellationTokenSource moveCancelTokenSource;
 
         public void Awake()
         {
